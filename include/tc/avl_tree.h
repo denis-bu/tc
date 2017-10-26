@@ -8,7 +8,7 @@
 #include <queue>
 #include <cassert>
 
-namespace db
+namespace tc
 {
 
 template<typename T>
@@ -64,6 +64,7 @@ template<typename T, typename Comp>
 inline void avl_tree<T, Comp>::insert(const T& v) {
 	if (root == nullptr) {
 		root = new node<T>(nullptr, v);
+		size_ = 1;
 		return;
 	}
 
