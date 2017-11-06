@@ -12,20 +12,22 @@ namespace tc
 {
 
 template<typename T>
-struct node 
+struct avl_node
 {
-	node* parent;
-	node* left;
-	node* right;
-	signed char balance;
-	T value;
+  using value_type = T;
 
-	node*& link(signed char b) {
-		return b == -1 ? left : right;
-	}
+  avl_node* parent;
+  avl_node* left;
+  avl_node* right;
+  signed char balance;
+  T value;
 
-	node(node* p, const T& v) : parent(p), left(nullptr), right(nullptr), balance(0), value(v)
-	{ }
+  avl_node*& link(signed char b) {
+    return b == -1 ? left : right;
+  }
+
+  avl_node(avl_node* p, const T& v) : parent(p), left(nullptr), right(nullptr), balance(0), value(v)
+  { }
 };
 
 template<typename T, typename Comp = std::less<T>>
@@ -34,6 +36,9 @@ class avl_tree
 public:
 	using size_type = std::size_t;
 	using value_type = T;
+    using node_type = avl_node<T>;
+    using node_ptr = node_type*;
+    using const_node_ptr = const node_ptr;
 
 	avl_tree() : root(nullptr), size_(0u)
 	{ }
@@ -42,28 +47,25 @@ public:
 	{ return size_; }
 
 	void insert(const T& value);
-	
-	template<typename Preo, typename Ino, typename Posto>
-	void traverse(Preo pre, Ino in, Posto post) const;
 
-	template<typename A>
-	void level_traverse(A callback) const;
+    const node_type* croot() const
+    { return root; }
 
 private:
 	Comp comp;
-	node<T>* root;
+    avl_node<T>* root;
 	size_type size_;
 };
 
 template<typename T>
-void assignParent(node<T>* n, node<T>* p) {
+void assignParent(avl_node<T>* n, avl_node<T>* p) {
 	if (n != nullptr) n->parent = p;
 }
 
 template<typename T, typename Comp>
 inline void avl_tree<T, Comp>::insert(const T& v) {
 	if (root == nullptr) {
-		root = new node<T>(nullptr, v);
+        root = new avl_node<T>(nullptr, v);
 		size_ = 1;
 		return;
 	}
@@ -90,7 +92,7 @@ inline void avl_tree<T, Comp>::insert(const T& v) {
 		}
 	}
 	auto& childptr = goLeft ? parent->left : parent->right;
-	childptr = new node<T>(parent, v);
+    childptr = new avl_node<T>(parent, v);
 	++size_;
 	// adjust balance
 	goLeft = (comp(v, rebalance->value));
@@ -115,7 +117,7 @@ inline void avl_tree<T, Comp>::insert(const T& v) {
 	}
 
 	bool change_root = rebalance->parent == nullptr;
-	node<T>* stub = nullptr;
+    avl_node<T>* stub = nullptr;
 	auto& parent_link = rebalance->parent
 		? ((rebalance->parent->left == rebalance)
 			? rebalance->parent->left
@@ -162,59 +164,6 @@ inline void avl_tree<T, Comp>::insert(const T& v) {
 		return;
 	}
 
-}
-
-
-template<typename T, typename Comp>
-template<typename Preo, typename Ino, typename Posto>
-inline void avl_tree<T, Comp>::traverse(Preo pre, Ino in, Posto post) const {
-	size_type level = 1u;
-	auto cur = root;
-	while (cur != nullptr) {
-		pre(cur->value, level);
-		if (cur->left != nullptr) {
-			cur = cur->left;
-			++level;
-		} else {
-			while (cur != nullptr) {
-				in(cur->value, level);
-				if (cur->right != nullptr) {
-					cur = cur->right;
-					++level;
-					break;
-				} else {
-					post(cur->value, level);
-					while (cur->parent != nullptr && cur->parent->left != cur) {
-						cur = cur->parent;
-						--level;
-						post(cur->value, level);
-					}
-					cur = cur->parent;
-					--level;
-
-				}
-			}
-		}
-	}
-}
-
-template<typename T, typename Comp>
-template<typename A>
-inline void avl_tree<T, Comp>::level_traverse(A callback) const {
-	std::queue<std::pair<node<T>*, size_type>> q;
-	q.push(make_pair(root, 1u));
-	while (!q.empty()) {
-		auto f = q.front(); q.pop();
-		auto n = f.first;
-		auto level = f.second;
-		callback(n->value, level, n->balance);
-		if (n->left != nullptr) {
-			q.push(make_pair(n->left, level + 1u));
-		}
-		if (n->right != nullptr) {
-			q.push(make_pair(n->right, level + 1u));
-		}
-	}
 }
 
 }
