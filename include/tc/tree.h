@@ -6,6 +6,7 @@
 #include <functional>
 #include <utility>
 #include <queue>
+#include <cmath>
 #include <cassert>
 
 namespace tc
@@ -53,6 +54,34 @@ bool is_bst(const Tree& tree) {
       && is_bst_helper(nt::right(root), nt::value(root), nt::max());
 }
 
+template<class Tree>
+bool is_avl_tree(const Tree& tree)
+{
+  using node_type = typename Tree::node_type;
+  using nt = node_traits<node_type>;
+  const int BAD = -1;
+  struct helper
+  {
+    // -1 not an avl tree, 0+ heights of a tree under root
+    int verify(const node_type* root)
+    {
+      if (root == nullptr)
+        return 0;
+      auto lh = verify(nt::left(root));
+      if (lh < 0)
+        return BAD;
+      auto rh = verify(nt::right(root));
+      if (rh < 0)
+        return BAD;
+      if (std::abs(lh - rh) > 1)
+        return BAD;
+      return 1 + std::max(lh, rh);
+    }
+  };
+
+  helper h;
+  return h.verify(tree.croot()) != BAD;
+}
 
 template<class Tree, typename PreO, typename InO, typename PostO>
 void traverse(const Tree& tree, PreO pre, InO in, PostO post)
@@ -87,11 +116,26 @@ void traverse(const Tree& tree, PreO pre, InO in, PostO post)
   }
 }
 
-template<class Tree, typename InO>
-void inorder_traverse(const Tree& tree, InO in)
+
+template<class Tree, typename Callback>
+void preorder_traverse(const Tree& tree, Callback cb)
 {
   auto dummy = [](typename Tree::value_type, unsigned) {};
-  traverse(tree, dummy, in, dummy);
+  traverse(tree, cb, dummy, dummy);
+}
+
+template<class Tree, typename Callback>
+void inorder_traverse(const Tree& tree, Callback cb)
+{
+  auto dummy = [](typename Tree::value_type, unsigned) {};
+  traverse(tree, dummy, cb, dummy);
+}
+
+template<class Tree, typename Callback>
+void postorder_traverse(const Tree& tree, Callback cb)
+{
+  auto dummy = [](typename Tree::value_type, unsigned) {};
+  traverse(tree, dummy, dummy, cb);
 }
 
 template<class Tree, typename Callback>
