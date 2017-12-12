@@ -12,13 +12,14 @@ struct tnode
 {
   using value_type = int;
 
+  tnode* parent;
   tnode* left;
   tnode* right;
-  int value;
+  int key;
 
-  tnode(tnode* l, tnode* r, int v) : left(l), right(r), value(v)
+  tnode(tnode* l, tnode* r, int v) : parent(nullptr), left(l), right(r), key(v)
   { }
-  tnode(int v) : left(nullptr), right(nullptr), value(v)
+  tnode(int v) : parent(nullptr), left(nullptr), right(nullptr), key(v)
   { }
 };
 
@@ -26,15 +27,26 @@ struct ttree
 {
   using node_type = tnode;
   tnode* root;
+  unsigned size_;
   const tnode* croot() const
   { return root; }
+  unsigned size() const {
+    return size_;
+  }
 };
 
 tnode* mnode(int v)
 { return new tnode { v }; }
 
 tnode* mnode(tnode* l, tnode* r, int v)
-{ return new tnode { l, r, v }; }
+{
+  auto node = new tnode { l, r, v };
+  if (l)
+    l->parent = node;
+  if (r)
+    r->parent = node;
+  return node;
+}
 
 }
 
@@ -89,9 +101,11 @@ TEST(test_is_bst_tricky, tree_test)
           2
         ),
         1
-      )
+      ), 1
     };
     ASSERT_TRUE(tc::is_bst(subj));
+    std::cout << "Yo\n";
+    //tc::print_tree(subj, std::cout);
 }
 
 
@@ -159,10 +173,10 @@ TEST(test_is_not_bst_tricky, tree_test)
 TEST(trivial_trees_are_avl_balanced, tree_test)
 {
   // Empty tree is avl tree
-  ASSERT_TRUE(tc::is_avl_tree(ttree{nullptr}));
+  ASSERT_TRUE(tc::is_avl_balanced_tree(ttree{nullptr}));
   // Tree with 1 or 2 nodes is avl tree
-  ASSERT_TRUE(tc::is_avl_tree(ttree{mnode(109)}));
-  ASSERT_TRUE(tc::is_avl_tree(ttree{mnode(mnode(5), nullptr, 9)}));
+  ASSERT_TRUE(tc::is_avl_balanced_tree(ttree{mnode(109)}));
+  ASSERT_TRUE(tc::is_avl_balanced_tree(ttree{mnode(mnode(5), nullptr, 9)}));
 }
 
 TEST(balanced_tree_is_avl_balanced, tree_test)
@@ -182,7 +196,7 @@ TEST(balanced_tree_is_avl_balanced, tree_test)
       0
     )
   };
-  ASSERT_TRUE(tc::is_avl_tree(subj));
+  ASSERT_TRUE(tc::is_avl_balanced_tree(subj));
   ASSERT_FALSE(tc::is_bst(subj));
 }
 
@@ -203,7 +217,7 @@ TEST(almost_balanced_tree_is_avl_balanced, tree_test)
       0
     )
   };
-  ASSERT_TRUE(tc::is_avl_tree(subj));
+  ASSERT_TRUE(tc::is_avl_balanced_tree(subj));
   ASSERT_FALSE(tc::is_bst(subj));
 }
 
@@ -221,7 +235,7 @@ TEST(list_of_three_nodes_is_not_avl_balanced, tree_test)
       1
     )
   };
-  ASSERT_FALSE(tc::is_avl_tree(subj));
+  ASSERT_FALSE(tc::is_avl_balanced_tree(subj));
 }
 
 TEST(test_right_heavy_tree_is_not_avl_balanced, tree_test)
@@ -241,7 +255,7 @@ TEST(test_right_heavy_tree_is_not_avl_balanced, tree_test)
       0
     )
   };
-  ASSERT_FALSE(tc::is_avl_tree(subj));
+  ASSERT_FALSE(tc::is_avl_balanced_tree(subj));
 }
 
 
@@ -262,5 +276,5 @@ TEST(test_left_heavy_tree_is_not_avl_balanced, tree_test)
       0
     )
   };
-  ASSERT_FALSE(tc::is_avl_tree(subj));
+  ASSERT_FALSE(tc::is_avl_balanced_tree(subj));
 }

@@ -15,18 +15,22 @@ template<typename T>
 struct avl_node
 {
   using value_type = T;
+  using balance_type = signed char;
+
+  static const balance_type LH = -1;  // Left heavy.
+  static const balance_type RH = -LH; // Right heavy.
 
   avl_node* parent;
   avl_node* left;
   avl_node* right;
-  signed char balance;
-  T value;
+  balance_type balance;
+  T key;
 
-  avl_node*& link(signed char b) {
-    return b == -1 ? left : right;
-  }
+  avl_node*& link(signed char b)
+  { return b == LH ? left : right; }
 
-  avl_node(avl_node* p, const T& v) : parent(p), left(nullptr), right(nullptr), balance(0), value(v)
+  avl_node(avl_node* p, const T& k)
+    : parent(p), left(nullptr), right(nullptr), balance(0), key(k)
   { }
 };
 
@@ -36,9 +40,9 @@ class avl_tree
 public:
 	using size_type = std::size_t;
 	using value_type = T;
-    using node_type = avl_node<T>;
-    using node_ptr = node_type*;
-    using const_node_ptr = const node_ptr;
+  using node_type = avl_node<T>;
+  using node_ptr = node_type*;
+  using const_node_ptr = const node_ptr;
 
 	avl_tree() : root(nullptr), size_(0u)
 	{ }
@@ -53,7 +57,7 @@ public:
 
 private:
 	Comp comp;
-    avl_node<T>* root;
+  avl_node<T>* root;
 	size_type size_;
 };
 
@@ -78,36 +82,38 @@ inline void avl_tree<T, Comp>::insert(const T& v) {
 		if (cur->balance != 0)
 			rebalance = cur;
 		parent = cur;
-		goLeft = (comp(v, cur->value));
+    goLeft = (comp(v, cur->key));
 		if (goLeft) {
 			cur = cur->left;
 		} else {
-			bool goRight = (comp(cur->value, v));
+      bool goRight = (comp(cur->key, v));
 			if (goRight) {
 				cur = cur->right;
 			} else {
-				cur->value = v;
+        //  update node's value
+        cur->key = v;
 				return;
 			}
 		}
 	}
-	auto& childptr = goLeft ? parent->left : parent->right;
-    childptr = new avl_node<T>(parent, v);
+
+  auto& childptr = goLeft ? parent->left : parent->right;
+  childptr = new avl_node<T>(parent, v);
 	++size_;
 	// adjust balance
-	goLeft = (comp(v, rebalance->value));
+  goLeft = (comp(v, rebalance->key));
 	signed char a = goLeft ? -1 : 1; // left heavy or right heavy
 	auto r = goLeft ? rebalance->left : rebalance->right; // child of rebalance node
 	auto p = r; // runner
 	while (p != childptr) {
 		assert(p->balance == 0);
-		goLeft = (comp(v, p->value));
+    goLeft = (comp(v, p->key));
 		p->balance = goLeft ? -1 : 1;
 		p = goLeft ? p->left : p->right;
 	}
 
 	if (rebalance->balance == 0) {
-		rebalance->balance = a; // todo: +1 level here
+    rebalance->balance = a; // todo: +1 level here
 		return;
 	}
 
@@ -143,7 +149,7 @@ inline void avl_tree<T, Comp>::insert(const T& v) {
 
 	if (r->balance == -a) {
 		// double rotation
-		auto newr = r->link(-a);
+    auto newr = r->link(-a);
 		r->link(-a) = newr->link(a);
 		assignParent(r->link(-a), r);
 		rebalance->link(a) = newr->link(-a);
@@ -153,8 +159,8 @@ inline void avl_tree<T, Comp>::insert(const T& v) {
 		newr->link(-a) = rebalance;
 		assignParent(newr->link(-a), newr);
 
-		r->balance = newr->balance == -1 ? 1 : 0;
-		rebalance->balance = newr->balance == 1 ? 1 : 0;
+    r->balance = newr->balance == -a ? a : 0;
+    rebalance->balance = newr->balance == a ? -a : 0;
 		newr->balance = 0;
 
 		parent_link = newr;

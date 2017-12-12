@@ -2,8 +2,12 @@
 #include "tc/tree.h"
 
 #include <gtest/gtest.h>
+
+#include <chrono>
 #include <vector>
 #include <iostream>
+
+#include <cstdlib>
 
 TEST(test_insert, avl_tree_test)
 {
@@ -46,4 +50,35 @@ TEST(test_size, avl_tree_test)
 {
   tc::avl_tree<int> subj {};
   EXPECT_EQ(0, subj.size());
+}
+
+TEST(test_monotonic_sequence, avl_tree_test)
+{
+  tc::avl_tree<int> subj {};
+  tc::avl_tree<int> subjr {};
+
+  for (int i = 0; i < 1000; ++i) {
+    int x = i-500;
+    subj.insert(x);
+    subjr.insert(- x);
+    ASSERT_TRUE(tc::is_avl_tree(subj));
+    ASSERT_TRUE(tc::is_avl_tree(subjr));
+  }
+}
+
+TEST(test_random_sequence, avl_tree_test)
+{
+  using namespace std::chrono;
+  auto ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+  std::srand(ms);
+
+  tc::avl_tree<int> subj {};
+
+  for (int i = 0; i < 1777; ++i) {
+    int x = rand();
+    std::cout << x << ", ";
+    subj.insert(x);
+    ASSERT_TRUE(tc::is_avl_tree(subj));
+  }
+  //tc::print_tree(subj, std::cout);
 }
