@@ -46,7 +46,7 @@ public:
   using balance_type = typename node_type::balance_type;
 
   static const balance_type LH = node_type::LH;  // Left heavy.
-  static const balance_type RH = -node_type::RH; // Right heavy.
+  static const balance_type RH = node_type::RH; // Right heavy.
 
 	avl_tree() : root(nullptr), size_(0u)
 	{ }
