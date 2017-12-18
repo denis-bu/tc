@@ -9,7 +9,7 @@
 
 #include <cstdlib>
 
-TEST(test_insert, avl_tree_test)
+TEST(avl_tree_test, test_insert)
 {
   tc::avl_tree<int> subj {};
   EXPECT_EQ(0, subj.size());
@@ -46,13 +46,13 @@ TEST(test_insert, avl_tree_test)
   }
 }
 
-TEST(test_size, avl_tree_test)
+TEST(avl_tree_test, test_size)
 {
   tc::avl_tree<int> subj {};
   EXPECT_EQ(0, subj.size());
 }
 
-TEST(test_monotonic_sequence, avl_tree_test)
+TEST(avl_tree_test, test_monotonic_sequence)
 {
   tc::avl_tree<int> subj {};
   tc::avl_tree<int> subjr {};
@@ -66,7 +66,7 @@ TEST(test_monotonic_sequence, avl_tree_test)
   }
 }
 
-TEST(test_random_sequence, avl_tree_test)
+TEST(avl_tree_test, test_random_sequence)
 {
   using namespace std::chrono;
   auto ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();

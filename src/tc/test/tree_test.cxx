@@ -52,7 +52,7 @@ tnode* mnode(tnode* l, tnode* r, int v)
 
 // is_bast test cases
 
-TEST(trivial_trees_are_bst, tree_test)
+TEST(tree_test, trivial_trees_are_bst)
 {
   // Empty tree is avl tree
   ASSERT_TRUE(tc::is_bst(ttree{nullptr}));
@@ -61,7 +61,7 @@ TEST(trivial_trees_are_bst, tree_test)
   ASSERT_TRUE(tc::is_bst(ttree{mnode(mnode(5), nullptr, 9)}));
 }
 
-TEST(test_is_bst, tree_test)
+TEST(tree_test, test_is_bst)
 {
   ttree subj = {
     mnode(
@@ -86,7 +86,7 @@ TEST(test_is_bst, tree_test)
     ASSERT_TRUE(tc::is_bst(subj));
 }
 
-TEST(test_is_bst_tricky, tree_test)
+TEST(tree_test, test_is_bst_tricky)
 {
   ttree subj = {
       mnode(
@@ -109,7 +109,7 @@ TEST(test_is_bst_tricky, tree_test)
 }
 
 
-TEST(test_is_not_bst, tree_test)
+TEST(tree_test, test_is_not_bst)
 {
   ttree subj = {
     mnode(
@@ -121,7 +121,7 @@ TEST(test_is_not_bst, tree_test)
   ASSERT_FALSE(tc::is_bst(subj));
 }
 
-TEST(test_is_not_bst_duplicate, tree_test)
+TEST(tree_test, test_is_not_bst_duplicate)
 {
   ttree subj = {
     mnode(
@@ -134,7 +134,7 @@ TEST(test_is_not_bst_duplicate, tree_test)
 }
 
 
-TEST(test_is_not_bst_tricky, tree_test)
+TEST(tree_test, test_is_not_bst_tricky)
 {
   ttree subj = {
     mnode(
@@ -170,7 +170,7 @@ TEST(test_is_not_bst_tricky, tree_test)
 
 // avl balance test cases
 
-TEST(trivial_trees_are_avl_balanced, tree_test)
+TEST(tree_test, trivial_trees_are_avl_balanced)
 {
   // Empty tree is avl tree
   ASSERT_TRUE(tc::is_avl_balanced_tree(ttree{nullptr}));
@@ -179,7 +179,7 @@ TEST(trivial_trees_are_avl_balanced, tree_test)
   ASSERT_TRUE(tc::is_avl_balanced_tree(ttree{mnode(mnode(5), nullptr, 9)}));
 }
 
-TEST(balanced_tree_is_avl_balanced, tree_test)
+TEST(tree_test, balanced_tree_is_avl_balanced)
 {
   ttree subj = {
     mnode(
@@ -200,7 +200,7 @@ TEST(balanced_tree_is_avl_balanced, tree_test)
   ASSERT_FALSE(tc::is_bst(subj));
 }
 
-TEST(almost_balanced_tree_is_avl_balanced, tree_test)
+TEST(tree_test, almost_balanced_tree_is_avl_balanced)
 {
   ttree subj = {
     mnode(
@@ -221,7 +221,7 @@ TEST(almost_balanced_tree_is_avl_balanced, tree_test)
   ASSERT_FALSE(tc::is_bst(subj));
 }
 
-TEST(list_of_three_nodes_is_not_avl_balanced, tree_test)
+TEST(tree_test, list_of_three_nodes_is_not_avl_balanced)
 {
 
   ttree subj = {
@@ -238,7 +238,7 @@ TEST(list_of_three_nodes_is_not_avl_balanced, tree_test)
   ASSERT_FALSE(tc::is_avl_balanced_tree(subj));
 }
 
-TEST(test_right_heavy_tree_is_not_avl_balanced, tree_test)
+TEST(tree_test, test_right_heavy_tree_is_not_avl_balanced)
 {
   ttree subj = {
     mnode(
@@ -259,7 +259,7 @@ TEST(test_right_heavy_tree_is_not_avl_balanced, tree_test)
 }
 
 
-TEST(test_left_heavy_tree_is_not_avl_balanced, tree_test)
+TEST(tree_test, test_left_heavy_tree_is_not_avl_balanced)
 {
   ttree subj = {
     mnode(

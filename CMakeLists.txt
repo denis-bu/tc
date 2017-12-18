@@ -31,7 +31,8 @@ include_directories(include)
 add_executable(
     test_runner
     src/tc/test/avl_tree_test.cxx
-    src/tc/test/tree_test.cxx)
+    src/tc/test/tree_test.cxx
+    src/tc/test/srm_726.cpp)
 target_link_libraries(test_runner gtest gmock_main)
 add_test(NAME avl_tree_test COMMAND test_runner)
 add_test(NAME tree_test COMMAND test_runner)
