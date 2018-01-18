@@ -73,12 +73,50 @@ TEST(avl_tree_test, test_random_sequence)
   std::srand(ms);
 
   tc::avl_tree<int> subj {};
-
-  for (int i = 0; i < 1777; ++i) {
-    int x = rand();
-    std::cout << x << ", ";
-    subj.insert(x);
-    ASSERT_TRUE(tc::is_avl_tree(subj));
-  }
+	std::string items;
+	items.reserve(2048 *	16);
+	try
+	{
+		for (int i = 0; i < 1777; ++i) {
+			int x = rand();
+			items += std::to_string(x) + ", ";
+			subj.insert(x);
+			ASSERT_TRUE(tc::is_avl_tree(subj)) << "With following input: " << items;
+		}
+	}
+	catch (...)
+	{
+		std::cout << "Exception caught with following input: " << items << std::endl;
+		throw;
+	}
   //tc::print_tree(subj, std::cout);
+}
+
+TEST(avl_tree_test, test_erase)
+{
+	tc::avl_tree<int> subj {};
+
+	subj.insert(1);
+	subj.insert(2);
+	subj.insert(3);
+	subj.insert(4);
+	subj.insert(5);
+
+	subj.erase(4);
+	EXPECT_EQ(4, subj.size());
+
+	tc::print_tree(subj, std::cout);
+	ASSERT_TRUE(tc::is_bst(subj));
+
+	{
+			std::vector<int> val_trace;
+			std::vector<unsigned> lvl_trace;
+			tc::level_order_traverse(subj, [&](int v, unsigned level) {
+					val_trace.push_back(v);
+					lvl_trace.push_back(level);
+			});
+
+			EXPECT_EQ(std::vector<int>({2, 1, 3, 5}), val_trace);
+			EXPECT_EQ(std::vector<unsigned>({1, 2, 2, 3}), lvl_trace);
+	}
 }

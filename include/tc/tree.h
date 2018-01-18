@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef DENIS_BU_TREE_H
-#define DENIS_BU_TREE_H
+#ifndef TC_TREE_H
+#define TC_TREE_H
 
 #include <functional>
 #include <utility>
